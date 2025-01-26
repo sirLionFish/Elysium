@@ -1,6 +1,11 @@
 #ifndef FACTION_CARD_H
 #define FACTION_CARD_H
 
+#include <stdbool.h>
+
+#define ROWS 8
+#define COLS 10
+
   typedef enum {
     ROW_MELEE,
     ROW_RANGED,
@@ -17,6 +22,8 @@
     int range;
     int speed;
     int special_ability;
+    int position_row;
+    int position_col;
   } Unit;
 
   typedef struct {
@@ -30,16 +37,18 @@
   } Army;
 
   typedef struct {
-    Army army1;
-    Army army2;
-    int size;
+    Unit *grid[ROWS][COLS];
   } Battlefield;
 
   Unit create_unit(const char *name, int health, int attack, int defense, int range, int speed, int special_ability);
-  // Army create_army(int unit_count);
-  // void destroy_army(Army *army);
-  // void display_army(const Army *army);
-  void add_unit_to_row(Army *army, RowType, Unit unit);
+  int add_unit_to_army(Army *army, Unit unit, int row, int col);
+  void add_army_to_row(Army *army, RowType, Unit unit);
+  int move_unit_column(Army *army, int row, int from_col, int to_col);
+  int move_unit_row(Army *army, int from_row, int from_col, int to_row, int to_col);
   int calculate_army_score(const Army *army);
+  void display_battlefield(const Battlefield* battlefield);
+  void initialize_battlefield(Battlefield *battlefield);
+  int place_unit_on_battlefield(Battlefield *battlefield, Unit *unit, int row, int col);
+  int move_unit(Battlefield *battlefield, int src_row, int src_col, int dest_row, int dest_col);
 
 #endif

@@ -11,18 +11,29 @@
 #define ERR_CELL_OCCUPIED 3
 #define ERR_OUT_OF_RANGE 4
 
-Unit create_unit(const char *name, int health, int attack, int defense, int range, int speed, int special_ability) {
+Unit create_unit(const char *name, int health, int attack, int defence, int range, int travel_speed) {
   Unit unit;
   strncpy(unit.name, name, sizeof(unit.name));
 
-  unit.health = unit.max_health = health;
-  unit.attack = attack;
-  unit.defense = defense;
-  unit.range = range;
-  unit.speed = speed;
-  unit.special_ability = special_ability;
+  unit.stats.health = unit.stats.max_health = health;
+  unit.stats.attack = attack;
+  unit.stats.defence = defence;
+  unit.stats.range = range;
+  unit.stats.travel_speed = travel_speed;
 
   return unit;
+}
+
+Skill create_skill(const char *name, int health_change, int attack_change, int defence_change, int range_change, int travel_speed_change) {
+  Skill skill;
+  strncpy(skill.name, name, sizeof(skill.name));
+  skill.stat_change.health = health_change;
+  skill.stat_change.attack = attack_change;
+  skill.stat_change.defence = defence_change;
+  skill.stat_change.range = range_change;
+  skill.stat_change.travel_speed = travel_speed_change;
+  skill.id = -1; 
+  return skill;
 }
 
 int add_unit_to_army(Army *army, Unit unit, int row, int col) {
@@ -34,7 +45,7 @@ int add_unit_to_army(Army *army, Unit unit, int row, int col) {
 
   Row *target_row = &army->rows[row];
 
-  if (target_row->units[col].health > 0) {
+  if (target_row->units[col].stats.health > 0) {
     printf("Column %d in Row %d is already occupied.\n", col, row);
     return 0;
   }
@@ -68,13 +79,13 @@ int move_unit_column(Army *army, int row, int from_col, int to_col) {
   Unit *unit_to = &target_row->units[to_col];
 
   // Check if there is a unit in the source position
-  if (unit_from->health <= 0) {
+  if (unit_from->stats.health <= 0) {
     printf("No unit in the source column (row: %d, col: %d).\n", row, from_col);
     return 0;
   }
 
   // Check if target position is occupied
-  if (unit_to->health > 0) {
+  if (unit_to->stats.health > 0) {
     // Swap the units
     Unit temp = *unit_from;
     *unit_from = *unit_to;
@@ -116,13 +127,13 @@ int move_unit_row(Army *army, int from_row, int from_col, int to_row, int to_col
   Row *target_row = &army->rows[to_row];
 
   // Check if there is a unit in the source position
-  if (source_row->units[from_col].health <= 0) {
+  if (source_row->units[from_col].stats.health <= 0) {
     printf("No unit in the source column (row: %d, col: %d).\n", from_row, from_col);
     return 0;
   }
 
   // Check if the target position is empty
-  if (target_row->units[to_col].health > 0) {
+  if (target_row->units[to_col].stats.health > 0) {
       printf("Destination column (row: %d, col: %d) is occupied.\n", to_row, to_col);
       return 0;
   }
@@ -144,26 +155,13 @@ int move_unit_row(Army *army, int from_row, int from_col, int to_row, int to_col
   return 1;
 }
 
-int calculate_army_score(const Army *army) {
-  int score = 0;
-
-  for (int row = 0; row < ROW_MAX; row++) {
-    for (int i = 0; i < army->rows[row].unit_count; i++) {
-      Unit unit = army->rows[row].units[i];
-      score += unit.attack + unit.defense + unit.health;
-    }
-  }
-
-  return score;
-}
-
 void display_battlefield(const Battlefield* battlefield) {
   printf("\nBattlefield:\n");
   for (int i = 0; i < ROWS; i++) {
     printf("Row %d: ", i + 1);
     for (int j = 0; j < COLS; j++) {
       if (battlefield->grid[i][j] != NULL) {
-        printf("[%s (%d HP)] ", battlefield->grid[i][j]->name, battlefield->grid[i][j]->health);
+        printf("[%s (%d HP)] ", battlefield->grid[i][j]->name, battlefield->grid[i][j]->stats.health);
       } else {
         printf("[Empty] ");
       }
@@ -204,41 +202,142 @@ int place_unit_on_battlefield(Battlefield *battlefield, Unit *unit, int row, int
   }
 
   battlefield->grid[row][col] = unit;
-  log_action("Placed", unit, row, col);
   return SUCCESS;
 }
 
 int move_unit(Battlefield *battlefield, int src_row, int src_col, int dest_row, int dest_col) {
+  // 1. Validate Input (Essential!)
   if (!is_valid_position(src_row, src_col) || !is_valid_position(dest_row, dest_col)) {
-    printf("Invalid move: source or destination out of bounds.\n");
+    printf("Invalid move: Source or destination out of bounds.\n");
     return ERR_INVALID_POSITION;
   }
 
-  Unit *unit = battlefield->grid[src_row][src_col];
-  if (unit == NULL) {
-    printf("No unit at source position: row %d, col %d\n", src_row, src_col);
+  Unit *unit_to_move = battlefield->grid[src_row][src_col]; // More descriptive name
+  if (unit_to_move == NULL) {
+    printf("No unit at source position: row %d, col %d\n", src_row + 1, src_col + 1); // +1 for user-friendly display
     return ERR_NO_UNIT;
   }
 
   if (src_row == dest_row && src_col == dest_col) {
-    printf("Unit %s remains in the same position: row %d, col %d\n",
-        unit->name, src_row + 1, src_col + 1);
-    return 0; // Treat this as a successful action
+    printf("Unit %s remains in the same position: row %d, col %d\n", unit_to_move->name, src_row + 1, src_col + 1);
+    return SUCCESS; // Or perhaps a specific "no move" code
   }
 
   if (!is_cell_empty(battlefield, dest_row, dest_col)) {
-    printf("Destination cell occupied: row %d, col %d\n", dest_row, dest_col);
+    printf("Destination cell occupied: row %d, col %d\n", dest_row + 1, dest_col + 1);
     return ERR_CELL_OCCUPIED;
   }
 
-  int distance = abs(src_row - dest_row) + abs(src_col - dest_col);
-  if (distance > unit->speed) {
-    printf("Move out of range or unit %s, Max range: %d\n", unit->name, unit->speed);
-    return ERR_OUT_OF_RANGE;
-  }
+  // 2. Perform the Move (Now that validation is complete)
+  battlefield->grid[dest_row][dest_col] = unit_to_move; // Move on the grid
+  battlefield->grid[src_row][src_col] = NULL;          // Clear the source
 
-  battlefield->grid[dest_row][dest_col] = unit;
-  battlefield->grid[src_row][src_col] = NULL;
-  log_action("Moved", unit, dest_row, dest_col);
+  // 3. Update Unit's Internal Position (CRITICAL!)
+  unit_to_move->position_row = dest_row;
+  unit_to_move->position_col = dest_col;
+
+  log_action("Moved", unit_to_move, dest_row, dest_col);
   return SUCCESS;
 }
+
+void apply_action_to_unit(Unit *target, Skill *skill) { 
+    if (!target || !skill) return;
+
+    target->stats.health += skill->stat_change.health;
+    target->stats.attack += skill->stat_change.attack;
+    target->stats.defence += skill->stat_change.defence;
+    target->stats.range += skill->stat_change.range;
+    target->stats.travel_speed += skill->stat_change.travel_speed;
+
+    if (target->stats.health > target->stats.max_health) {
+        target->stats.health = target->stats.max_health;
+    }
+    if (target->stats.health < 0) {
+        target->stats.health = 0;
+    }
+}
+
+int validate_target(Unit *actor, Unit *target, Skill *skill) {
+  if (!actor || !skill) {
+    printf("Invalid action: Missing actor or skill.\n");
+    return 1;
+  }
+
+  if ((skill->action.target != TARGET_SELF) && !target) {
+    printf("Invalid target: No target selected for skill %s.\n", skill->name);
+    return 2;
+  }
+
+  switch (skill->action.target) {
+    case TARGET_SELF:
+      if (actor != target) {
+        printf("Invalid target: skill %s can only used on self.\n", skill->name);
+        return 3;
+      }
+      break;
+    case TARGET_ALLY:
+      if (actor->allegiance != target->allegiance) {
+        printf("Invalid target: %s must be used on allies.\n", skill->name);
+        return 4;
+      }
+      break;
+    case TARGET_ENEMY:
+      if (actor->allegiance == target->allegiance) {
+        printf("Invalid target: %s must be used on enemies\n", skill->name);
+        return 5;
+      }
+      break;
+    case TARGET_EVERYONE:
+      break; // No restrictions
+    default:
+      printf("Invalid skill\n");
+      return 6;
+  }
+
+  return 0; // Success!
+}
+
+Skill* get_skill_by_id(int skill_id){
+  for(int i = 0; i < MAX_SKILLS; i++){
+    if(skill_registry[i].id == skill_id){
+      return &skill_registry[i];
+    }
+  }
+  return NULL;
+}
+
+void execute_action(Battlefield *battlefield, Unit *actor, int skill_id, int target_row, int target_col) {
+  if (!actor) {
+    printf("Error: Actor does not exist.\n");
+    return;
+  }
+
+  Skill *skill = get_skill_by_id(skill_id); // Only call once
+  if (!skill) {
+    printf("Error: Skill ID %d not found.\n", skill_id);
+    return;
+  }
+
+  // Range check:
+  int dx = abs(target_row - actor->position_row);
+  int dy = abs(target_col - actor->position_col);
+  int distance = dx + dy; // Manhattan distance (for grid-based movement)
+
+  if (distance > skill->action.range) {
+    printf("out of range\n");
+    return; // Or return an error code
+  }
+
+  Unit *target = battlefield->grid[target_row][target_col];
+
+  if (validate_target(actor, target, skill) != 0) { 
+    printf("Invalid target for skill '%s'.\n", skill->name);
+    return;
+  }
+
+  apply_action_to_unit(target, skill);
+
+  // Log action execution
+  printf("%s used '%s' on %s at (%d, %d).\n", actor->name, skill->name, target ? target->name : "empty cell", target_row, target_col);
+}
+

@@ -1,17 +1,18 @@
 #ifndef FACTION_CARD_H
 #define FACTION_CARD_H
 
-#define ROWS 8
-#define COLS 10
+#define ROW_MAX 8
+#define COL_MAX 10
 #define MAX_SKILLS 100
 #define MAX_UNIT_SKILLS 10
+#define GLOBAL_UNIT_POOL_SIZE 100
 
   typedef enum {
-    ROW_MELEE,
-    ROW_RANGED,
-    ROW_MAGIC,
-    ROW_MAX
-  } RowType;
+    Class_MELEE,
+    Class_RANGE,
+    Class_MAGIC,
+    Class_MAX
+  } ClassType;
 
   typedef enum {
     ALLEGIANCE_PLAYER,
@@ -71,9 +72,8 @@
     Stats stat_change;
   } Skill;
 
-
   typedef struct {
-    int id;
+    int unit_id;
     char name[50];
     int position_row;
     int position_col;
@@ -83,24 +83,44 @@
   } Unit;
 
   typedef struct {
-    Unit units[10];
+    Unit units[COL_MAX];
     int unit_count;
-  } Row;
+    int row_formation_id;
+  } RowFormation;
 
   typedef struct {
-    Row rows[ROW_MAX];
-    int total_score;
+    int army_id;
+    RowFormation rows[ROW_MAX];
   } Army;
 
   typedef struct {
-    Unit *grid[ROWS][COLS];
+    int faction_id;
+    Army army;
+    char name[50];
+  } Faction;
+
+  typedef struct {
+    Unit *grid[ROW_MAX][COL_MAX];
+    Faction factions[2];
+    int global_turn;
   } Battlefield;
 
+  Unit global_unit_pool[GLOBAL_UNIT_POOL_SIZE];
+  
   Unit create_unit(const char *name, int health, int attack, int defence, int range, int travel_speed);
   Skill create_skill(const char *name, int health, int attack, int defence, int range, int travel_speed);
+  void initialize_army(Army *army, int army_id);
+  int add_unit_to_army(Army *army, Unit unit, int row_formation_id);
 
-  int add_unit_to_army(Army *army, Unit unit, int row, int col);
-  void add_army_to_row(Army *army, RowType, Unit unit);
+  void display_faction(const Faction *faction);
+  int check_victory_condition(const Army *army);
+
+  int is_target_in_range(const Unit *unit, const Army *Army);
+
+  // void process_faction_turn(Battlefield *battlefield);
+
+  // // int add_unit_to_army(Army *army, Unit unit, int row, int col);
+  // void add_army_to_row(Army *army, ClassType, Unit unit); //check this out again
 
   int move_unit_column(Army *army, int row, int from_col, int to_col);
   int move_unit_row(Army *army, int from_row, int from_col, int to_row, int to_col);

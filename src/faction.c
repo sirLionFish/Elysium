@@ -11,15 +11,31 @@
 #define ERR_CELL_OCCUPIED 3
 #define ERR_OUT_OF_RANGE 4
 
+int global_unit_pool_count = 0;
+
 Unit create_unit(const char *name, int health, int attack, int defence, int range, int travel_speed) {
   Unit unit;
+  unit.unit_id = global_unit_pool_count;
   strncpy(unit.name, name, sizeof(unit.name));
-
-  unit.stats.health = unit.stats.max_health = health;
+  unit.position_row = -1;
+  unit.position_col = -1;
+  unit.allegiance = 0;
+  unit.stats.health = health;
+  unit.stats.max_health = health;
   unit.stats.attack = attack;
   unit.stats.defence = defence;
   unit.stats.range = range;
   unit.stats.travel_speed = travel_speed;
+
+  unit.skills.id = 1;
+  strncpy(unit.skills.name, "action", sizeof(unit.skills.name));
+
+  if (global_unit_pool_count < GLOBAL_UNIT_POOL_SIZE) {
+    global_unit_pool[global_unit_pool_count] = unit;
+    global_unit_pool_count++;
+  } else {
+    printf("Global unit pool full!\n");
+  }
 
   return unit;
 }
@@ -36,34 +52,86 @@ Skill create_skill(const char *name, int health_change, int attack_change, int d
   return skill;
 }
 
-int add_unit_to_army(Army *army, Unit unit, int row, int col) {
-  int ROW_CAPACITY = 10;
-  if (row < 0 || row >= ROW_MAX || col < 0 || col >= ROW_CAPACITY) {
-    printf("Invalid row or column.\n");
-    return 0;
+void initialize_army(Army *army, int army_id) {
+  army->army_id = army_id;
+  for (int i = 0; i < ROW_MAX; i++) {
+    army->rows[i].unit_count = 0;
+
+    //initialize unit slot to empty in the row
+    for (int j = 0; j < COL_MAX; j++) {
+      army->rows[i].units[j].unit_id = -1;
+      strcpy(army->rows[i].units[j].name, "");
+    }
   }
-
-  Row *target_row = &army->rows[row];
-
-  if (target_row->units[col].stats.health > 0) {
-    printf("Column %d in Row %d is already occupied.\n", col, row);
-    return 0;
-  }
-
-  unit.position_row = row;
-  unit.position_col = col;
-  target_row->units[col] = unit;
-  target_row->unit_count++;
-
-  return 1;
 }
 
-void add_army_to_row(Army *army, RowType row_type, Unit unit) {
-  if (army->rows[row_type].unit_count < 10) {
-    army->rows[row_type].units[army->rows[row_type].unit_count++] = unit;
-  } else {
-    printf("Row is full, cannot add unit: %s\n", unit.name);
+int add_unit_to_army(Army *army, Unit unit, int row_formation_id) {
+  if (row_formation_id < 0 || row_formation_id >= ROW_MAX) {
+    printf("Invalid row formaion id: %d\n", row_formation_id);
+    return -1;
   }
+
+  RowFormation *row = &army->rows[row_formation_id];
+  if (row->unit_count >= COL_MAX) {
+    printf("Row %d is already full.\n", row_formation_id);
+    return -1;
+  }
+
+  //place unit in available col
+  unit.position_row = row_formation_id;
+  unit.position_col = row->unit_count;
+
+  // add unit to formation
+  row->units[row->unit_count] = unit;
+  row->unit_count++;
+
+  return 0;
+}
+
+void display_faction(const Faction *faction) {
+  printf("\n-- %s --\n", faction->name);
+  for (int row = 0; row < ROW_MAX; row++) {
+    printf("Row %d", row + 1);
+    for (int col = 0; col < COL_MAX; col++) {
+      const Unit *unit = &faction->army.rows[row].units[col];
+      if (unit->stats.health > 0)
+        printf("[%s: %d hp]", unit->name, unit->stats.health);
+      else
+        printf("[Empty]");
+    }
+    printf("\n");
+  }
+}
+
+int check_victory_condition(const Army *army) {
+  for (int row = 0; row < ROW_MAX; row++) {
+    for (int row = 0; row < ROW_MAX; row++) {
+      for (int col = 0; col < COL_MAX; col++) {
+        if (army->rows[row].units[col].stats.health > 0)
+          return 1;
+      }
+    }
+  }
+  return 0;
+}
+
+int is_unit_read(const Unit *unit) {
+  return (unit->stats.health > 0);
+}
+
+int is_target_in_range(const Unit *unit, const Army *army) {
+  for (int row; row < ROW_MAX; row++) {
+    for (int col = 0; col < COL_MAX; col++) {
+      const Unit *target = &army->rows[row].units[col];
+      if (target->stats.health > 0) {
+        int dx = abs(unit->position_row - target->position_row);
+        int dy = abs(unit->position_col - target->position_col);
+        if ((dx + dy) <= unit->stats.range)
+          return 0;
+      }
+    }
+  }
+  return 1;
 }
 
 int move_unit_column(Army *army, int row, int from_col, int to_col) {
@@ -74,7 +142,7 @@ int move_unit_column(Army *army, int row, int from_col, int to_col) {
     return 0;
   }
 
-  Row *target_row = &army->rows[row];
+  RowFormation *target_row = &army->rows[row];
   Unit *unit_from = &target_row->units[from_col];
   Unit *unit_to = &target_row->units[to_col];
 
@@ -115,7 +183,6 @@ int move_unit_column(Army *army, int row, int from_col, int to_col) {
 }
 
 int move_unit_row(Army *army, int from_row, int from_col, int to_row, int to_col) {
-  int ROW_MAX = 3;
   int ROW_CAPACITY = 10;
   if (from_row < 0 || from_row >= ROW_MAX || to_row < 0 || to_row >= ROW_MAX || 
     from_col < 0 || from_col >= ROW_CAPACITY || to_col < 0 || to_col >= ROW_CAPACITY) {
@@ -123,8 +190,8 @@ int move_unit_row(Army *army, int from_row, int from_col, int to_row, int to_col
     return 0;
   }
 
-  Row *source_row = &army->rows[from_row];
-  Row *target_row = &army->rows[to_row];
+  RowFormation *source_row = &army->rows[from_row];
+  RowFormation *target_row = &army->rows[to_row];
 
   // Check if there is a unit in the source position
   if (source_row->units[from_col].stats.health <= 0) {
@@ -157,9 +224,9 @@ int move_unit_row(Army *army, int from_row, int from_col, int to_row, int to_col
 
 void display_battlefield(const Battlefield* battlefield) {
   printf("\nBattlefield:\n");
-  for (int i = 0; i < ROWS; i++) {
+  for (int i = 0; i < ROW_MAX; i++) {
     printf("Row %d: ", i + 1);
-    for (int j = 0; j < COLS; j++) {
+    for (int j = 0; j < COL_MAX; j++) {
       if (battlefield->grid[i][j] != NULL) {
         printf("[%s (%d HP)] ", battlefield->grid[i][j]->name, battlefield->grid[i][j]->stats.health);
       } else {
@@ -171,15 +238,15 @@ void display_battlefield(const Battlefield* battlefield) {
 }
 
 void initialize_battlefield(Battlefield *battlefield) {
-  for (int i = 0; i < ROWS; i++) {
-    for (int j = 0; j < COLS; j++) {
+  for (int i = 0; i < ROW_MAX; i++) {
+    for (int j = 0; j < COL_MAX; j++) {
       battlefield->grid[i][j] = NULL;
     }
   }
 }
 
 int is_valid_position(int row, int col) {
-  return row >= 0 && row < ROWS && col >= 0 && col < COLS;
+  return row >= 0 && row < ROW_MAX && col >= 0 && col < COL_MAX;
 }
 
 int is_cell_empty(Battlefield *battlefield, int row, int col) {
@@ -340,4 +407,3 @@ void execute_action(Battlefield *battlefield, Unit *actor, int skill_id, int tar
   // Log action execution
   printf("%s used '%s' on %s at (%d, %d).\n", actor->name, skill->name, target ? target->name : "empty cell", target_row, target_col);
 }
-

@@ -12,6 +12,7 @@
 #define ERR_OUT_OF_RANGE 4
 
 int global_unit_pool_count = 0;
+int global_faction_pool_count = 0;
 
 Unit create_unit(const char *name, int health, int attack, int defence, int range, int travel_speed) {
   Unit unit;
@@ -30,13 +31,11 @@ Unit create_unit(const char *name, int health, int attack, int defence, int rang
   unit.skills.id = 1;
   strncpy(unit.skills.name, "action", sizeof(unit.skills.name));
 
-  if (global_unit_pool_count < GLOBAL_UNIT_POOL_SIZE) {
-    global_unit_pool[global_unit_pool_count] = unit;
-    global_unit_pool_count++;
+  if (global_unit_pool_count < MAX_UNIT_POOL) {
+    global_unit_pool[global_unit_pool_count++] = unit;
   } else {
     printf("Global unit pool full!\n");
   }
-
   return unit;
 }
 
@@ -88,6 +87,51 @@ int add_unit_to_army(Army *army, Unit unit, int row_formation_id) {
   return 0;
 }
 
+void initialize_faction(Faction *faction, const char *name, int army_id) {
+  strncpy(faction->name, name, sizeof(faction->name));
+  initialize_army(&faction->army, army_id);
+  if (global_faction_pool_count < MAX_FACTIONS) {
+    global_faction_pool[global_faction_pool_count++] = faction;
+  } else {
+    printf("Global faction pool is full!\n");
+  }
+}
+
+void initialize_battlefield(Battlefield *bf) {
+  bf->global_turn = rand() % 2;
+  for (int i = 0; i < ROW_MAX; i++) {
+    for (int j = 0; j < COL_MAX; j++) {
+      bf->grid[i][j] = NULL;
+    }
+  }
+}
+
+int add_faction_to_battlefield(Battlefield *bf, int faction_id, int faction_index) {
+  if (faction_index < 0 || faction_index > 1) {
+    printf("Invalid faction index: %d\n", faction_index);
+    return -1;
+  }
+  if (faction_id < 0 || faction_id >= global_faction_pool_count) {
+    printf("Invalid faction id: %d", faction_id);
+    return -1;
+  }
+  Faction *faction = global_faction_pool[faction_id];
+  bf->factions[faction_index] = *faction;
+
+  int col_offset = (faction_index == 0) ? 0 : COL_MAX / 2;
+  int max_cols = COL_MAX / 2;
+
+  for (int i = 0; i < ROW_MAX; i++) {
+    for (int j = 0; j < max_cols; j++) {
+      if (j < bf->factions[faction_index].army.rows[i].unit_count) {
+        int grid_col = col_offset + j;
+        bf->grid[i][grid_col] = &bf->factions[faction_index].army.rows[i].units[j];
+      }
+    }
+  }
+  return 0;
+}
+
 void display_faction(const Faction *faction) {
   printf("\n-- %s --\n", faction->name);
   for (int row = 0; row < ROW_MAX; row++) {
@@ -115,7 +159,7 @@ int check_victory_condition(const Army *army) {
   return 0;
 }
 
-int is_unit_read(const Unit *unit) {
+int is_unit_ready(const Unit *unit) {
   return (unit->stats.health > 0);
 }
 
@@ -234,14 +278,6 @@ void display_battlefield(const Battlefield* battlefield) {
       }
     }
     printf("\n");
-  }
-}
-
-void initialize_battlefield(Battlefield *battlefield) {
-  for (int i = 0; i < ROW_MAX; i++) {
-    for (int j = 0; j < COL_MAX; j++) {
-      battlefield->grid[i][j] = NULL;
-    }
   }
 }
 

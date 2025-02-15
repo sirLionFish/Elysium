@@ -3,68 +3,86 @@
 #include <string.h>
 #include <time.h>
 #include "src/include/faction.h"
+#include "src/include/unit.h"
+#include "src/include/army.h"
+#include "src/include/battlefield.h"
+#include "src/include/movement.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <time.h>
+#include "src/include/faction.h"
+#include "src/include/unit.h"
+#include "src/include/army.h"
+#include "src/include/battlefield.h"
+#include "src/include/movement.h"
 
 int main(void) {
     srand((unsigned)time(NULL));
-    
+
     // -------------------------------
-    // Create Units and Build a Global Unit Pool
+    // Create Units and Build the Global Unit Pool
     // -------------------------------
     for (int i = 0; i < 20; i++) {
         char name[50];
         sprintf(name, "Unit%d", i);
-        create_unit(name, 100, 20, 10, 1, 1);
+        
+        // Create and add unit to the global pool
+        Unit *unit = create_and_add_unit(name, 100, 20, 10, 2, 2); 
+        if (!unit) {
+            printf("Failed to create unit %s.\n", name);
+            continue;
+        }
+        if (!global_unit_pool[i]) {
+            printf("Error: Unit %d is NULL, skipping.\n", i);
+            continue;
+        }
     }
-    
+
     // -------------------------------
-    // Initialize an Army and Add Units from Global Unit Pool
+    // Initialize Two Armies and Add Units from Global Unit Pool
     // -------------------------------
     Army armyA, armyB;
     initialize_army(&armyA, 1);
     initialize_army(&armyB, 2);
-    
-    // Add the first 10 units to row 0, and the next 10 to row 1.
+
     for (int i = 0; i < 10; i++) {
-      add_unit_to_army(&armyA, global_unit_pool[i], 0);
+        if (add_unit_to_army(&armyA, i, 0) != 0) {
+            printf("Failed to add unit with ID %d to armyA.\n", i);
+        }
     }
     for (int i = 10; i < 20; i++) {
-      add_unit_to_army(&armyB, global_unit_pool[i], 0);
+        if (add_unit_to_army(&armyB, i, 0) != 0) {
+            printf("Failed to add unit with ID %d to armyB.\n", i);
+        }
     }
-    
+
     // -------------------------------
-    // Initialize Factions and Add Them to the Global Faction Pool
+    // Initialize Factions and Assign Armies
     // -------------------------------
-    Faction factionA, factionB;
-    initialize_faction(&factionA, "Faction A", 1);
-    initialize_faction(&factionB, "Faction B", 2);
-    
-    // For demonstration, assign our filled army to factionA.
-    factionA.army = armyA; // Assign the army to faction A
-    factionB.army = armyB;
-    
+    initialize_faction("Faction A", 1);
+    initialize_faction("Faction B", 2);
+
+    // Explicitly assign armies to factions
+    if (global_faction_pool[0]) global_faction_pool[0]->army = armyA;
+    if (global_faction_pool[1]) global_faction_pool[1]->army = armyB;
+
     // -------------------------------
     // Initialize the Battlefield and Add Factions
     // -------------------------------
     Battlefield bf;
     initialize_battlefield(&bf);
-    
-    // Assume factionA is at global faction pool index 0 and factionB at index 1.
-    add_faction_to_battlefield(&bf, 0, 0);
-    add_faction_to_battlefield(&bf, 1, 1);
-    
+
+    add_faction_to_battlefield(&bf, 0, 0); // Faction A
+    add_faction_to_battlefield(&bf, 1, 1); // Faction B
+
     // -------------------------------
-    // Display the Battlefield Grid
+    // Display the Initial Battlefield Grid
     // -------------------------------
-    printf("Battlefield Grid:\n");
-    for (int i = 0; i < ROW_MAX; i++) {
-        for (int j = 0; j < COL_MAX; j++) {
-            if (bf.grid[i][j] != NULL)
-                printf("%s ", bf.grid[i][j]->name);
-            else
-                printf("Empty ");
-        }
-        printf("\n");
-    }
-    
+    printf("Initial Battlefield Grid:\n");
+    display_battlefield(&bf);
+
     return 0;
 }
+
+

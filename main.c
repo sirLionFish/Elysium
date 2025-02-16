@@ -82,7 +82,28 @@ int main(void) {
     printf("Initial Battlefield Grid:\n");
     display_battlefield(&bf);
 
+    // -------------------------------
+    // Move Units
+    // -------------------------------
+    printf("\nAttempting to move Unit4...\n");
+    Unit *unit4 = global_unit_pool[4]; 
+    move_unit(&bf, unit4, 1, 1);
+
+    printf("\nAttempting to move Unit10...\n");
+    Unit *unit18 = global_unit_pool[18]; 
+    move_unit(&bf, unit18, 5, 8);  
+
+    // -------------------------------
+    // Display Updated Battlefield
+    // -------------------------------
+    printf("\nUpdated Battlefield Grid:\n");
+    display_battlefield(&bf);
+
+    printf("\nAnd again...\n");
+    Unit *secone = global_unit_pool[18]; 
+    move_unit(&bf, secone, 4, 8);
+
+    display_battlefield(&bf);
+
     return 0;
 }
-
-

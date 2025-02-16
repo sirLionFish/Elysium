@@ -36,26 +36,3 @@ Unit *create_and_add_unit(const char *name, int health, int attack, int defence,
     global_unit_pool[global_unit_pool_count++] = unit;
     return unit;
 }
-
-// int add_unit_to_army(Army *army, Unit unit, int row_formation_id) {
-//   if (row_formation_id < 0 || row_formation_id >= ROW_MAX) {
-//     printf("Invalid row formaion id: %d\n", row_formation_id);
-//     return -1;
-//   }
-
-//   RowFormation *row = &army->rows[row_formation_id];
-//   if (row->unit_count >= COL_MAX) {
-//     printf("Row %d is already full.\n", row_formation_id);
-//     return -1;
-//   }
-
-//   //place unit in available col
-//   unit.position_row = row_formation_id;
-//   unit.position_col = row->unit_count;
-
-//   // add unit to formation
-//   row->units[row->unit_count] = unit;
-//   row->unit_count++;
-
-//   return 0;
-// }

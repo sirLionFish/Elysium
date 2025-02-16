@@ -19,10 +19,15 @@ void initialize_army(Army *army, int army_id) {
   }
 }
 
+
+void assign_unit_uid(Unit *unit, int army_id, int position) {
+  sprintf(unit->uid, "%s:%X:%X", unit->name, army_id, position);
+}
+
 int add_unit_to_army(Army *army, int unit_id, int formation) {
     if (formation < 0 || formation >= ROW_MAX) {
-      printf("Invalid row formation id: %d\n", formation);
-      return -1;
+        printf("Invalid row formation id: %d\n", formation);
+        return -1;
     }
 
     if (unit_id < 0 || unit_id >= global_unit_pool_count) {
@@ -40,21 +45,20 @@ int add_unit_to_army(Army *army, int unit_id, int formation) {
 
     // Assign unit to the formation, but DO NOT set battlefield position yet
     row->units[row->unit_count] = unit;
+
+    // Update the unit's UID
+    assign_unit_uid(unit, army->army_id, row->unit_count);
+
     row->unit_count++;
 
-    printf("Added Unit %s (ID: %d) to Army %d in Formation Row %d (Pending Deployment)\n", 
-           unit->name, unit->unit_id, army->army_id, formation);
+    printf("Added Unit %s (ID: %d, UID: %s) to Army %d in Formation Row %d (Pending Deployment)\n", 
+           unit->name, unit->unit_id, unit->uid, army->army_id, formation);
 
     return 0; 
 }
 
 
-// void assign_unit_uid(Unit *unit, int army_id, int position) {
-//   // For example, format: name:army_id:position, with army_id and position in hexadecimal.
-//   sprintf(unit->uid, "%s:%X:%X", unit->name, army_id, position);
-//   // Add the unit to the UnitMap for O(1) lookup.
-//   add_unit_to_unitmap(unit);
-// }
+
 
 // int add_unit_to_army(Army *army, Unit unit, int formation) {
 //   if (row_formation_id < 0 || row_formation_id >= ROW_MAX) {

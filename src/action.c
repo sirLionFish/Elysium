@@ -1,12 +1,12 @@
-// #include "include/unit.h"
-// #include "include/skill.h"
-// #include "include/action.h"
-// #include "include/battlefield.h"
-// #include "include/global_limit.h"
-// #include <stdio.h>
-// #include <stdlib.h>
-// #include <stddef.h>
-// #include <string.h>
+#include "include/unit.h"
+#include "include/skill.h"
+#include "include/action.h"
+#include "include/battlefield.h"
+#include "include/global_limit.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <stddef.h>
+#include <string.h>
 
 // void apply_action_to_unit(Unit *target, Skill *skill) { 
 //   if (!target || !skill) return;
@@ -65,15 +65,6 @@
 //   return 0; // Success!
 // }
 
-// Skill* get_skill_by_id(int skill_id){
-//   for(int i = 0; i < MAX_SKILLS; i++){
-//     if(skill_registry[i].id == skill_id){
-//       return &skill_registry[i];
-//     }
-//   }
-//   return NULL;
-// }
-
 // void execute_action(Battlefield *battlefield, Unit *actor, int skill_id, int target_row, int target_col) {
 //   if (!actor) {
 //     printf("Error: Actor does not exist.\n");
@@ -89,7 +80,7 @@
 //   // Range check:
 //   int dx = abs(target_row - actor->position_row);
 //   int dy = abs(target_col - actor->position_col);
-//   int distance = dx + dy; // Manhattan distance (for grid-based movement)
+//   int distance = dx + dy; // should switch to chebyshev distance 
 
 //   if (distance > skill->action.range) {
 //     printf("out of range\n");

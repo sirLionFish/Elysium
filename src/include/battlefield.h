@@ -2,7 +2,7 @@
 #define BATTLEFIELD_H
 
   #include "faction.h"
-  #include "unit.h"
+  #include "unit_struct.h"
 
   typedef struct {
     Unit *grid[ROW_MAX][COL_MAX];

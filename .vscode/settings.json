@@ -1,5 +1,6 @@
 {
   "files.associations": {
-    "army.h": "c"
+    "army.h": "c",
+    "global_limit.h": "c"
   }
 }

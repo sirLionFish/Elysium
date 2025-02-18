@@ -1,9 +1,9 @@
-// #ifndef ACTION_H
-// #define ACTION_H
+#ifndef ACTION_H
+#define ACTION_H
 
-// #include "unit.h"
-// #include "skill.h"
-// #include "battlefield.h"
+#include "unit.h"
+#include "skill.h"
+#include "battlefield.h"
 
 //   typedef enum {
 //     RANGE,
@@ -32,8 +32,8 @@
 //     int aoe;
 //   } Action;
 
-//   int validate_target(Unit *actor, Unit *target, Skill *skill);
-//   void apply_action_to_unit(Unit *target, Skill *skill);
-//   void execute_action(Battlefield *battlefield, Unit *actor, int skill_id, int target_row, int target_col);
+  // int validate_target(Unit *actor, Unit *target, Skill *skill);
+  // void apply_action_to_unit(Unit *target, Skill *skill);
+  // void execute_action(Battlefield *battlefield, Unit *actor, int skill_id, int target_row, int target_col);
 
-// #endif
+#endif

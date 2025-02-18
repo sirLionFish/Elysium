@@ -1,4 +1,5 @@
 #include "include/unit.h"
+#include "include/unit_struct.h"
 #include "include/global_limit.h"
 #include "include/battlefield.h"
 #include <stdio.h>
@@ -17,7 +18,7 @@ int move_unit(Battlefield *bf, Unit *unit, int dest_row, int dest_col) {
   int found = 0;
   int current_row = -1, current_col = -1;
 
-  // Search for the unit using UID comparison instead of name comparison
+  // Search for the unit using UID comparison
   for (int i = 0; i < ROW_MAX; i++) {
     for (int j = 0; j < COL_MAX; j++) {
       if (bf->grid[i][j] != NULL && strcmp(bf->grid[i][j]->uid, unit->uid) == 0) {

@@ -2,7 +2,7 @@
 #define ARMY_H
 
 #include "global_limit.h"
-#include "unit.h"
+#include "unit_struct.h"
 
   typedef struct {
     Unit *units[COL_MAX];

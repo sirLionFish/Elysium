@@ -1,18 +1,21 @@
-// #ifndef SKILL_H
-// #define SKILL_H
+#ifndef SKILL_H
+#define SKILL_H
 
-// #include "global_limit.h"
-// #include "action.h"
+#define MAX_SKILLs 100;
 
-//   typedef struct {
-//     int id;
-//     char name[20];
-//     // Action action;
-//     Stats stat_change;
-//   } Skill;
+#include "global_limit.h"
+#include "action.h"
+#include "stats.h"
 
-//   Skill* get_skill_by_id(int skill_id);
-//   Skill skill_registry[MAX_SKILLS];
-//   Skill create_skill(const char *name, int health, int attack, int defence, int range, int travel_speed);
+  typedef struct {
+    int skill_id;
+    char name[20];
+    Stats stat_change;
+  } Skill;
 
-// #endif
+  Skill *get_skill_by_id(int skill_id);
+  Skill *create_skill(const char *name, int health, int attack, int defence, int range, int travel_speed);
+  Skill global_skill_pool[MAX_SKILLS];
+  int global_skill_count;
+
+#endif

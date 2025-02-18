@@ -1,13 +1,12 @@
 #include "include/battlefield.h"
 #include "include/faction.h"
 #include "include/unit.h"
+#include "include/unit_struct.h"
 #include "include/global_limit.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <stddef.h>
 #include <string.h>
-
-UnitMap unit_map[UNIT_MAP_SIZE];
 
 void initialize_battlefield(Battlefield *bf) {
   bf->global_turn = rand() % 2;
@@ -17,40 +16,6 @@ void initialize_battlefield(Battlefield *bf) {
     }
   }
 }
-
-// unsigned int hash_uid(const char *str) {
-//   unsigned int hash = 5381;
-//   int c;
-//   while ((c = *str++))
-//     hash = ((hash << 5) + hash) + c; /* hash * 33 + c */
-//   return hash % UNIT_MAP_SIZE;
-// }
-
-// void add_unit_to_unitmap(const char *uid, Unit *unit) {
-//     unsigned int index = hash_uid(uid);
-//     // Linear probing for an empty slot.
-//     while (unit_map[index].in_use) {
-//         index = (index + 1) % UNIT_MAP_SIZE;
-//     }
-//     strcpy(unit_map[index].uid, uid);
-//     unit_map[index].unit = unit;
-//     unit_map[index].in_use = 1;
-// }
-
-// Unit *find_unit_by_uid(const char *uid) {
-//   unsigned int index = hash_uid(uid);
-//   unsigned int start_index = index;
-//   while (unit_map[index].in_use) {
-//     if (strcmp(unit_map[index].uid, uid) == 0) {
-//       return unit_map[index].unit;
-//     }
-//     index = (index + 1) % UNIT_MAP_SIZE;
-//     if (index == start_index) {
-//       break; 
-//     }
-//   }
-//   return NULL;
-// }
 
 int add_faction_to_battlefield(Battlefield *bf, int faction_id, int faction_index) {
   if (faction_index < 0 || faction_index > 1) {
@@ -77,11 +42,7 @@ int add_faction_to_battlefield(Battlefield *bf, int faction_id, int faction_inde
   for (int j = 0; j < faction->army.rows[0].unit_count; j++) {
     Unit *unit = faction->army.rows[0].units[j];
 
-    // Ensure we are storing the correct unit pointer
     bf->grid[row][col_offset + j] = unit;
-
-    // Also store the unit in UnitMap for fast lookup
-    // unit_map[unit->unit_id] = (UnitMap){unit->unit_id, unit, row, col_offset + j};
 
     printf("Placed %s (ID: %d) at (%d, %d)\n",
            unit->name, unit->unit_id, row, col_offset + j);

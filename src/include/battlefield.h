@@ -21,6 +21,5 @@
   void initialize_battlefield(Battlefield *battlefield);
   int add_faction_to_battlefield(Battlefield *bf, int faction_id, int faction_index);
   void display_battlefield(const Battlefield* battlefield);
-  // Unit *find_unit_by_uid(const char *uid);
   // void add_unit_to_unitmap(const char *uid, Unit *unit);
 #endif

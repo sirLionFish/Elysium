@@ -32,7 +32,7 @@
 //     int aoe;
 //   } Action;
 
-  // int validate_target(Unit *actor, Unit *target, Skill *skill);
+  int execute_action(Battlefield *bf, const char *actor_uid, const char *target_uid, int skill_id);
   // void apply_action_to_unit(Unit *target, Skill *skill);
   // void execute_action(Battlefield *battlefield, Unit *actor, int skill_id, int target_row, int target_col);
 

@@ -10,6 +10,7 @@
   typedef struct {
     int skill_id;
     char name[20];
+    int allegience;
     Stats stat_change;
   } Skill;
 

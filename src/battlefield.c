@@ -45,7 +45,7 @@ int add_faction_to_battlefield(Battlefield *bf, int faction_id, int faction_inde
     bf->grid[row][col_offset + j] = unit;
 
     printf("Placed %s (ID: %d) at (%d, %d)\n",
-           unit->name, unit->unit_id, row, col_offset + j);
+      unit->name, unit->unit_id, row, col_offset + j);
   }
 
   return 0;

@@ -40,13 +40,17 @@ int validate_target(Unit *actor, Unit *target, Skill *skill) {
   }
 
   // Simple check: the skill's allegience field indicates the valid target allegience.
-  if (target->allegience != skill->allegience) {
-    printf("Invalid target: Skill %s is only applicable to units with allegience %d, but target has allegience %d.\n",
-      skill->name, skill->allegience, target->allegience);
-    return -3;
+  TargetType target_compare =
+    (actor->allegience == target->allegience) ? MATCH : NOT_MATCH;
+  
+  if (skill->target != target_compare) {
+  printf("Invalid target: Skill %s requires target match %s, but actor and target comparison is %s.\n",
+    skill->name,
+    (skill->target == MATCH ? "MATCH" : "NOT_MATCH"),
+    (target_compare == MATCH ? "MATCH" : "NOT_MATCH"));
+  return -3;
   }
-    
-    return 0; 
+  return 0; 
 }
 
 int execute_action(Battlefield *bf, const char *actor_uid, const char *target_uid, int skill_id) {

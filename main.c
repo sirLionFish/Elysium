@@ -15,10 +15,10 @@ int main(void) {
   // -------------------------------
   // Create Skills and Build the Global Skill Pool
   // -------------------------------
-  Skill *fireball = create_skill("Fireball", -10, 30, 0, 8, 0);
-  Skill *ice_shard = create_skill("Ice Shard", -20, 20, 5, 2, 0);
-  Skill *heal = create_skill("Heal", 30, 0, 0, 2, 0);
-  Skill *shield_bash = create_skill("Shield Bash", 0, 10, 15, 1, 0);
+  Skill *fireball = create_skill("Fireball", -10, 30, 0, 8, 0, NOT_MATCH);
+  Skill *ice_shard = create_skill("Ice Shard", -20, 20, 5, 2, 0, NOT_MATCH);
+  Skill *heal = create_skill("Heal", 30, 0, 0, 2, 0, MATCH);
+  Skill *shield_bash = create_skill("Shield Bash", 0, 10, 15, 1, 0, NOT_MATCH);
 
   // -------------------------------
   // Create Units

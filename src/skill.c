@@ -4,7 +4,7 @@
 
 int global_skill_count = 0;
 
-Skill *create_skill(const char *name, int health_change, int attack_change, int defence_change, int range_change, int travel_speed) {
+Skill *create_skill(const char *name, int health_change, int attack_change, int defence_change, int range_change, int travel_speed, TargetType type) {
   if (global_skill_count >= MAX_SKILLS) {
     printf("Error: Skill pool is full!\n");
     return NULL;
@@ -20,6 +20,8 @@ Skill *create_skill(const char *name, int health_change, int attack_change, int 
   skill->stat_change.defence = defence_change;
   skill->stat_change.range = range_change;
   skill->stat_change.travel_speed = travel_speed;
+
+  skill->target = type;
 
   global_skill_count++;
 

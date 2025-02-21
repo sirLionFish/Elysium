@@ -1,0 +1,20 @@
+#ifndef GLOBAL_LIMIT_H
+#define GLOBAL_LIMIT_H
+
+#define ROW_MAX 8
+#define COL_MAX 10
+#define MAX_FACTIONS 10
+#define MAX_FACTION_POOL 100
+#define UNIT_MAP_SIZE 128
+#define MAX_UNIT_POOL 100
+#define MAX_SKILLS 100
+#define MAX_UNIT_SKILLS 10
+
+#define SUCCESS 0
+#define ERR_INVALID_POSITION 1
+#define ERR_NO_UNIT 2
+#define ERR_CELL_OCCUPIED 3
+#define ERR_OUT_OF_RANGE 4
+
+
+#endif

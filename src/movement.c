@@ -2,11 +2,11 @@
 #include "include/unit_struct.h"
 #include "include/global_limit.h"
 #include "include/battlefield.h"
+#include "include/validate.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <stddef.h>
 #include <string.h>
-
 
 int chebyshev_distance(int r1, int c1, int r2, int c2) {
   int dx = abs(r1 - r2);
@@ -14,56 +14,41 @@ int chebyshev_distance(int r1, int c1, int r2, int c2) {
   return (dx > dy) ? dx : dy;
 }
 
-int move_unit(Battlefield *bf, Unit *unit, int dest_row, int dest_col) {
-  int found = 0;
-  int current_row = -1, current_col = -1;
-
-  // Search for the unit using UID comparison
-  for (int i = 0; i < ROW_MAX; i++) {
-    for (int j = 0; j < COL_MAX; j++) {
-      if (bf->grid[i][j] != NULL && strcmp(bf->grid[i][j]->uid, unit->uid) == 0) {
-        current_row = i;
-        current_col = j;
-        found = 1;
-        break;
-      }
-    }
-    if (found) break;
-  }
-
-  // If unit not found, print error
-  if (!found) {
-    printf("ERROR: Unit with UID %s not found on the battlefield.\n", unit->uid);
+int move_unit(Battlefield *bf, const char *unit_uid, int dest_row, int dest_col) {
+  //find unit in battlefield
+  Unit *unit = find_unit_by_uid(bf, unit_uid);
+  if (!unit) {
+    printf("Error: Unit with UID %s not found.\n", unit_uid);
     return -1;
   }
 
-  printf("Unit %s (UID: %s) found at (%d, %d). Attempting to move to (%d, %d)\n",
-         unit->name, unit->uid, current_row, current_col, dest_row, dest_col);
-
-  // Ensure move is within battlefield bounds
-  if (dest_row < 0 || dest_row >= ROW_MAX || dest_col < 0 || dest_col >= COL_MAX) {
-    printf("Invalid destination: (%d, %d)\n", dest_row, dest_col);
-    return -1;
+  //ensure move with battlefield bounds
+  if (validate_position(bf, dest_row, dest_col != 0)) {
+    return -2;
   }
 
-  // Ensure the unit doesn't move more than its travel speed
+  //check unit's turn
+  if (validate_turn(bf, unit) != 0) {
+    return -3;
+  }
+
+  //get unit current position
+  int current_row = unit->position_row;
+  int current_col = unit->position_col;
+
+  //ensure to not move beyond travel_speed value
   int move_distance = chebyshev_distance(current_row, current_col, dest_row, dest_col);
   if (move_distance > unit->stats.travel_speed) {
-    printf("Unit %s (UID: %s) can't move that far (speed: %d, attempted: %d).\n",
-           unit->name, unit->uid, unit->stats.travel_speed, move_distance);
-    return -1;
+    printf("Can't move to %d places, unit's travel speed is %d.\n", unit->stats.travel_speed, move_distance);
+    return -4;
   }
 
-  // Ensure the destination is empty
-  if (bf->grid[dest_row][dest_col] != NULL) {
-    printf("Destination (%d, %d) is occupied.\n", dest_row, dest_col);
-    return -1;
-  }
-
-  // Move the unit
+  //update unit position on grid
   bf->grid[current_row][current_col] = NULL;
   bf->grid[dest_row][dest_col] = unit;
+  unit->position_row = dest_row;
+  unit->position_col = dest_col;
 
-  printf("Unit %s (UID: %s) moved to (%d, %d)\n", unit->name, unit->uid, dest_row, dest_col);
+  printf("%s moved to (%d, %d)\n", unit->name, dest_row, dest_col);
   return 0;
 }

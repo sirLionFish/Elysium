@@ -139,10 +139,6 @@ int main(void) {
 
   display_battlefield(&bf);
 
-  // Manually set global_turn so that the actor's faction can act.
-  // Let's assume faction A (units with allegience 0) acts when global_turn == 0.
-  // bf.global_turn = 0;
-
   // -------------------------------
   // Display the Initial Battlefield Grid
   // -------------------------------
@@ -152,8 +148,7 @@ int main(void) {
   // -------------------------------
   // Test execute_action
   // -------------------------------
-  // For example, let Unit0 from Faction A (UID "Unit0:1:0") cast Fireball on Unit10 from Faction B (UID "Unit10:2:0").
-  printf("\nAttempting to execute action: Fireball from %s on Unit10...\n", global_unit_pool[10]->uid);
+  printf("\nAttempting to execute action: Fireball from %s on Unit10...\n", global_unit_pool[4]->uid);
   int result = execute_action(&bf, global_unit_pool[4]->uid, global_unit_pool[10]->uid, fireball->skill_id);
   if (result != 0) {
     printf("execute_action failed with error code %d\n", result);
@@ -161,10 +156,10 @@ int main(void) {
 
   end_turn(&bf, 0, 1);
 
-  printf("\nAttempting to execute action: Fireball from %s on Unit10...\n", global_unit_pool[14]->uid);
-  int reresult = execute_action(&bf, global_unit_pool[1]->uid, global_unit_pool[10]->uid, fireball->skill_id);
+  printf("\nAttempting to execute action: Fireball from %s on Unit4...\n", global_unit_pool[18]->uid);
+  int reresult = execute_action(&bf, global_unit_pool[18]->uid, global_unit_pool[4]->uid, fireball->skill_id);
   if (reresult != 0) {
-    printf("execute_action failed with error code %d\n", result);
+    printf("execute_action failed with error code %d\n", reresult);
   }
 
   // -------------------------------

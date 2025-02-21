@@ -54,58 +54,58 @@ int validate_target(Unit *actor, Unit *target, Skill *skill) {
 }
 
 int execute_action(Battlefield *bf, const char *actor_uid, const char *target_uid, int skill_id) {
-    // Lookup actor and target using their UIDs
-    Unit *actor = find_unit_by_uid(bf, actor_uid);
-    if (!actor) {
-      printf("ERROR: Actor with UID %s not found on the battlefield.\n", actor_uid);
-      return -1;
-    }
-    
-    Unit *target = find_unit_by_uid(bf, target_uid);
-    if (!target) {
-      printf("ERROR: Target with UID %s not found on the battlefield.\n", target_uid);
-      return -2;
-    }
-    
-    // Lookup skill
-    Skill *skill = get_skill_by_id(skill_id);
-    if (!skill) {
-        printf("ERROR: Skill ID %d not found.\n", skill_id);
-        return -3;
-    }
-    
-    // Check if it's the actor's faction's turn.
-    // For example, if bf->global_turn indicates which allegience is allowed to act:
-    if (actor->allegience != bf->global_turn) {
-        printf("ERROR: It's not the turn for actor with UID %s (allegience %d, turn %d).\n", 
-          actor->uid, actor->allegience, bf->global_turn);
-        return -4;
-    }
-    
-    // Check if the target is in range using Chebyshev distance.
-    int distance = chebyshev_distance(actor->position_row, actor->position_col, target->position_row, target->position_col);
-    if (distance > skill->stat_change.range) {
-      printf("ERROR: Target is out of range for skill %s (range: %d, distance: %d).\n", 
-        skill->name, skill->stat_change.range, distance);
-      return -5;
-    }
-    
-    // Validate target based on skill's allegience requirement.
-    int valid = validate_target(actor, target, skill);
-    if (valid != 0) {
-      printf("ERROR: Target validation failed for skill %s (code: %d).\n", skill->name, valid);
-      return valid;
-    }
-    
-    // If all checks pass, apply the skill's stat changes to target's stats.
-    apply_action_to_unit(target, skill);
-    
-    // Log action execution.
-    printf("%s used '%s' on %s at (%d, %d).\n", 
-        actor->uid, skill->name, target->uid, target->position_row, target->position_col);
-    printf("Updated target stats: Health=%d, Attack=%d, Defence=%d, Range=%d, Travel Speed=%d\n",
-        target->stats.health, target->stats.attack, target->stats.defence,
-        target->stats.range, target->stats.travel_speed);
-    
-    return 0;
+  // Lookup actor and target using their UIDs
+  Unit *actor = find_unit_by_uid(bf, actor_uid);
+  if (!actor) {
+    printf("ERROR: Actor with UID %s not found on the battlefield.\n", actor_uid);
+    return -1;
+  }
+  
+  Unit *target = find_unit_by_uid(bf, target_uid);
+  if (!target) {
+    printf("ERROR: Target with UID %s not found on the battlefield.\n", target_uid);
+    return -2;
+  }
+  
+  // Lookup skill
+  Skill *skill = get_skill_by_id(skill_id);
+  if (!skill) {
+    printf("ERROR: Skill ID %d not found.\n", skill_id);
+    return -3;
+  }
+  
+  // Check if it's the actor's faction's turn.
+  // For example, if bf->global_turn indicates which allegience is allowed to act:
+  if (actor->allegience != bf->global_turn) {
+    printf("ERROR: It's not the turn for actor with UID %s (allegience %d, turn %d).\n", 
+      actor->uid, actor->allegience, bf->global_turn);
+    return -4;
+  }
+  
+  // Check if the target is in range using Chebyshev distance.
+  int distance = chebyshev_distance(actor->position_row, actor->position_col, target->position_row, target->position_col);
+  if (distance > skill->stat_change.range) {
+    printf("ERROR: Target is out of range for skill %s (range: %d, distance: %d).\n", 
+      skill->name, skill->stat_change.range, distance);
+    return -5;
+  }
+  
+  // Validate target based on skill's allegience requirement.
+  int valid = validate_target(actor, target, skill);
+  if (valid != 0) {
+    printf("ERROR: Target validation failed for skill %s (code: %d).\n", skill->name, valid);
+    return valid;
+  }
+  
+  // If all checks pass, apply the skill's stat changes to target's stats.
+  apply_action_to_unit(target, skill);
+  
+  // Log action execution.
+  printf("%s used '%s' on %s at (%d, %d).\n", 
+    actor->uid, skill->name, target->uid, target->position_row, target->position_col);
+  printf("Updated target stats: Health=%d, Attack=%d, Defence=%d, Range=%d, Travel Speed=%d\n",
+    target->stats.health, target->stats.attack, target->stats.defence,
+    target->stats.range, target->stats.travel_speed);
+  
+  return 0;
 }

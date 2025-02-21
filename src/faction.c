@@ -96,7 +96,7 @@ int move_unit_column(Army *army, int row, int from_col, int to_col) {
     unit_to->position_col = to_col;
 
     printf("Swapped %s (Col %d) with %s (Col %d) in Row %d.\n",
-            unit_from->name, from_col + 1, unit_to->name, to_col + 1, row + 1);
+      unit_from->name, from_col + 1, unit_to->name, to_col + 1, row + 1);
 
     return 1;
   }
@@ -109,7 +109,7 @@ int move_unit_column(Army *army, int row, int from_col, int to_col) {
   *unit_from = (Unit){0};
 
   printf("Moved %s from Col %d to Col %d in Row %d.\n",
-          unit_to->name, from_col + 1, to_col + 1, row + 1);
+    unit_to->name, from_col + 1, to_col + 1, row + 1);
 
   return 1;
 }
@@ -134,8 +134,8 @@ int move_unit_row(Army *army, int from_row, int from_col, int to_row, int to_col
 
   // Check if the target position is empty
   if (target_row->units[to_col].stats.health > 0) {
-      printf("Destination column (row: %d, col: %d) is occupied.\n", to_row, to_col);
-      return 0;
+    printf("Destination column (row: %d, col: %d) is occupied.\n", to_row, to_col);
+    return 0;
   }
 
   // Move the unit
@@ -150,7 +150,7 @@ int move_unit_row(Army *army, int from_row, int from_col, int to_row, int to_col
   target_row->unit_count++;
 
   printf("Moved %s from row %d, col %d to row %d, col %d.\n",
-        temp.name, from_row + 1, from_col + 1, to_row + 1, to_col + 1);
+    temp.name, from_row + 1, from_col + 1, to_row + 1, to_col + 1);
 
   return 1;
 }
@@ -241,20 +241,20 @@ int move_unit(Battlefield *battlefield, int src_row, int src_col, int dest_row, 
 }
 
 void apply_action_to_unit(Unit *target, Skill *skill) { 
-    if (!target || !skill) return;
+  if (!target || !skill) return;
 
-    target->stats.health += skill->stat_change.health;
-    target->stats.attack += skill->stat_change.attack;
-    target->stats.defence += skill->stat_change.defence;
-    target->stats.range += skill->stat_change.range;
-    target->stats.travel_speed += skill->stat_change.travel_speed;
+  target->stats.health += skill->stat_change.health;
+  target->stats.attack += skill->stat_change.attack;
+  target->stats.defence += skill->stat_change.defence;
+  target->stats.range += skill->stat_change.range;
+  target->stats.travel_speed += skill->stat_change.travel_speed;
 
-    if (target->stats.health > target->stats.max_health) {
-        target->stats.health = target->stats.max_health;
-    }
-    if (target->stats.health < 0) {
-        target->stats.health = 0;
-    }
+  if (target->stats.health > target->stats.max_health) {
+      target->stats.health = target->stats.max_health;
+  }
+  if (target->stats.health < 0) {
+      target->stats.health = 0;
+  }
 }
 
 int validate_target(Unit *actor, Unit *target, Skill *skill) {

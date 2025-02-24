@@ -12,7 +12,7 @@
 //     MAGICAL,
 //     DEVINE,
 //     HELLISH
-//   } ActionType;
+//   } SkillType;
 
 //   typedef enum {
 //     TARGET_SELF,
@@ -31,7 +31,7 @@
 //     int duration;
 //     int effect_value;
 //     int aoe;
-//   } Action;
+//   } Modifiers;
 
   int execute_action(Battlefield *bf, UnitMap *unit_map, const char *actor_uid, const char *target_uid, int skill_id);
   // void apply_action_to_unit(Unit *target, Skill *skill);

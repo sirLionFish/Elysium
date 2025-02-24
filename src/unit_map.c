@@ -54,10 +54,12 @@ void print_unit_map(UnitMap *unit_map) {
     if (entry) {
       printf("Bucket %d:\n", i);
       while (entry != NULL) {
-        printf(" UID: %s | Unit Name: %s | Unit ID: %d\n",
+        printf(" UID: %s | Unit Name: %s | Unit ID: %d | (%d, %d)\n",
           entry->uid,
           entry->unit->name,
-          entry->unit->unit_id);
+          entry->unit->unit_id,
+          entry->unit->position_row,
+          entry->unit->position_col);
         entry = entry->next;
       }
     }

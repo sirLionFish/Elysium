@@ -9,6 +9,7 @@
 #include "src/include/movement.h"
 #include "src/include/skill.h"
 #include "src/include/unit_map.h"
+#include "src/include/action_queue.h"
 
 void start_game(Battlefield *bf, int army1_id, int army2_id) {
   bf->global_turn = (rand() % 2 == 0) ? army1_id : army2_id;
@@ -130,13 +131,15 @@ int main(void) {
   // -------------------------------
   // Move Units
   // -------------------------------
-  Unit *unit4 = global_unit_pool[4]; 
-  printf("\nMoving %s...\n", global_unit_pool[4]->uid);
-  move_unit(&bf, &unit_map, unit4->uid, 1, 1);
+  Action moveAction = create_move_action(global_unit_pool[4]->uid, 6, 3);
+  int moveResult = perform_action(&bf, &unit_map, moveAction);
+  if (moveResult != 0) {
+    printf("Move action failed with error code %d\n", moveResult);
+  }
 
-  printf("\nMoving Unit10...\n");
-  Unit *unit18 = global_unit_pool[18]; 
-  move_unit(&bf, &unit_map, unit18->uid, 5, 8);  
+  printf("\nMoving Unit18... %d, %d\n", global_unit_pool[18]->position_row, global_unit_pool[18]->position_col);
+  Unit *unit18 = global_unit_pool[18];
+  move_unit(&bf, &unit_map, unit18->uid, 1, 8);
 
   // -------------------------------
   // Display Updated Battlefield
@@ -162,10 +165,10 @@ int main(void) {
   // -------------------------------
   // Test execute_action
   // -------------------------------
-  printf("\nAttempting to execute action: Fireball from %s on Unit10...\n", global_unit_pool[4]->uid);
-  int result = execute_action(&bf, &unit_map, global_unit_pool[4]->uid, global_unit_pool[10]->uid, fireball->skill_id);
-  if (result != 0) {
-    printf("execute_action failed with error code %d\n", result);
+  Action execAction = create_execute_action(global_unit_pool[4]->uid, global_unit_pool[10]->uid, fireball->skill_id);
+  int execResult = perform_action(&bf, &unit_map, execAction);
+  if (execResult != 0) {
+    printf("Execute action failed with error code %d\n", execResult);
   }
 
   end_turn(&bf, 0, 1);

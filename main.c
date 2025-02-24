@@ -129,60 +129,32 @@ int main(void) {
   display_battlefield(&bf);
 
   // -------------------------------
-  // Move Units
+  // Create and Add Actions to the Queue
   // -------------------------------
+  ActionQueue actionQueue;
+  init_action_queue(&actionQueue);
+  print_action_queue(&actionQueue);
+
+  // For example, queue a move action for Unit4
   Action moveAction = create_move_action(global_unit_pool[4]->uid, 6, 3);
-  int moveResult = perform_action(&bf, &unit_map, moveAction);
-  if (moveResult != 0) {
-    printf("Move action failed with error code %d\n", moveResult);
-  }
+  add_action_to_queue(&actionQueue, moveAction);
+  print_action_queue(&actionQueue);
 
-  printf("\nMoving Unit18... %d, %d\n", global_unit_pool[18]->position_row, global_unit_pool[18]->position_col);
-  Unit *unit18 = global_unit_pool[18];
-  move_unit(&bf, &unit_map, unit18->uid, 1, 8);
+  // Queue an execute action for Unit4 using fireball on Unit10
+  Action execAction = create_execute_action(global_unit_pool[1]->uid, global_unit_pool[10]->uid, fireball->skill_id);
+  add_action_to_queue(&actionQueue, execAction);
+  print_action_queue(&actionQueue);
+  // -------------------------------
+  // Process the Action Queue at End of Turn
+  // -------------------------------
+  // When the faction ends its turn, process all queued actions.
+  process_action_queue(&actionQueue, &bf, &unit_map);
+  print_action_queue(&actionQueue);
 
   // -------------------------------
-  // Display Updated Battlefield
+  // Display Updated Battlefield Grid After Processing Actions
   // -------------------------------
-  printf("\nUpdated Battlefield Grid:\n");
-  display_battlefield(&bf);
-
-  printf("\nAnd again...\n");
-  Unit *secone = global_unit_pool[18];
-  move_unit(&bf, &unit_map, secone->uid, 4, 8);
-
-  display_battlefield(&bf);
-
-  Unit *here = get_unit_by_uid(&unit_map, global_unit_pool[4]->uid);
-  printf("check this thing out %s\n", here->uid); // returns check this thing out Unit4:0:4
-
-  // -------------------------------
-  // Display the Initial Battlefield Grid
-  // -------------------------------
-  printf("Initial Battlefield Grid:\n");
-  display_battlefield(&bf);
-
-  // -------------------------------
-  // Test execute_action
-  // -------------------------------
-  Action execAction = create_execute_action(global_unit_pool[4]->uid, global_unit_pool[10]->uid, fireball->skill_id);
-  int execResult = perform_action(&bf, &unit_map, execAction);
-  if (execResult != 0) {
-    printf("Execute action failed with error code %d\n", execResult);
-  }
-
-  end_turn(&bf, 0, 1);
-
-  printf("\nAttempting to execute action: Fireball from %s on Unit4...\n", global_unit_pool[18]->uid);
-  int reresult = execute_action(&bf, &unit_map, global_unit_pool[18]->uid, global_unit_pool[4]->uid, fireball->skill_id);
-  if (reresult != 0) {
-    printf("execute_action failed with error code %d\n", reresult);
-  }
-
-  // -------------------------------
-  // Display Updated Battlefield Grid
-  // -------------------------------
-  printf("\nUpdated Battlefield Grid:\n");
+  printf("\nUpdated Battlefield Grid After Processing Actions:\n");
   display_battlefield(&bf);
 
   return 0;

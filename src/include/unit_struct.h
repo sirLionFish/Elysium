@@ -11,6 +11,7 @@
     int position_row;
     int position_col;
     int allegience;
+    int action_point;
     Stats stats;
     int skill_list[MAX_UNIT_SKILLS];
   } Unit;

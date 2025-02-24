@@ -9,6 +9,7 @@
 #define MAX_UNIT_POOL 100
 #define MAX_SKILLS 100
 #define MAX_UNIT_SKILLS 10
+#define HASH_MAP_SIZE 1024
 
 #define SUCCESS 0
 #define ERR_INVALID_POSITION 1

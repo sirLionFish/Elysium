@@ -7,6 +7,7 @@
 #include "include/unit_struct.h"
 #include "include/global_limit.h"
 #include "include/battlefield.h"
+#include "include/unit_map.h"
 
 void initialize_army(Army *army, int army_id) {
   army->army_id = army_id;
@@ -24,9 +25,9 @@ void assign_unit_uid(Unit *unit, int army_id, int position) {
   sprintf(unit->uid, "%s:%X:%X", unit->name, army_id, position);
 }
 
-int add_unit_to_army(Army *army, int unit_id, int formation) {
+int add_unit_to_army(Army *army, int unit_id, int formation, UnitMap *unit_map) {
   if (formation < 0 || formation >= ROW_MAX) {
-    printf("Invalid row formation id: %d\n", formation);
+    printf("Invalid row formation id %d\n", unit_id);
     return -1;
   }
 
@@ -43,17 +44,19 @@ int add_unit_to_army(Army *army, int unit_id, int formation) {
 
   Unit *unit = global_unit_pool[unit_id];
 
-  // Assign unit to the formation
+  //assign unit to formation
   row->units[row->unit_count] = unit;
 
-  // Update the unit's UID here
+  //update uid of unit based on position
   assign_unit_uid(unit, army->army_id, row->unit_count);
   unit->allegience = army->army_id;
+
+  insert_unit(unit_map, unit);
 
   row->unit_count++;
 
   printf("Added Unit %s (ID: %d, UID: %s) to Army %d in Formation Row %d (Pending Deployment)\n", 
     unit->name, unit->unit_id, unit->uid, army->army_id, formation);
 
-  return 0; 
+  return 0;
 }

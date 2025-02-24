@@ -8,6 +8,7 @@
 #include "src/include/battlefield.h"
 #include "src/include/movement.h"
 #include "src/include/skill.h"
+#include "src/include/unit_map.h"
 
 void start_game(Battlefield *bf, int army1_id, int army2_id) {
   bf->global_turn = (rand() % 2 == 0) ? army1_id : army2_id;
@@ -71,22 +72,32 @@ int main(void) {
   }
 
   // -------------------------------
+  // Initialize the UnitMap
+  // -------------------------------
+  // Here we initialize a UnitMap. Global or dynamic allocation is fine.
+  // In this case, we declare a local UnitMap which is zero-initialized.
+  UnitMap unit_map = {0};
+
+  // -------------------------------
   // Initialize Two Armies and Add Units from Global Unit Pool
   // -------------------------------
   Army armyA, armyB;
   initialize_army(&armyA, 0);
   initialize_army(&armyB, 1);
 
+  // Note: add_unit_to_army is now updated to take an extra parameter UnitMap *.
   for (int i = 0; i < 10; i++) {
-    if (add_unit_to_army(&armyA, i, 0) != 0) {
+    if (add_unit_to_army(&armyA, i, 0, &unit_map) != 0) {
       printf("Failed to add unit with ID %d to armyA.\n", i);
     }
   }
   for (int i = 10; i < 20; i++) {
-    if (add_unit_to_army(&armyB, i, 0) != 0) {
+    if (add_unit_to_army(&armyB, i, 0, &unit_map) != 0) {
       printf("Failed to add unit with ID %d to armyB.\n", i);
     }
   }
+
+  print_unit_map(&unit_map);
 
   // -------------------------------
   // Initialize Factions and Assign Armies
@@ -119,13 +130,13 @@ int main(void) {
   // -------------------------------
   // Move Units
   // -------------------------------
-  printf("\nAttempting to move Unit4...\n");
   Unit *unit4 = global_unit_pool[4]; 
-  move_unit(&bf, unit4, 1, 1);
+  printf("\nMoving %s...\n", global_unit_pool[4]->uid);
+  move_unit(&bf, &unit_map, unit4->uid, 1, 1);
 
-  printf("\nAttempting to move Unit10...\n");
+  printf("\nMoving Unit10...\n");
   Unit *unit18 = global_unit_pool[18]; 
-  move_unit(&bf, unit18, 5, 8);  
+  move_unit(&bf, &unit_map, unit18->uid, 5, 8);  
 
   // -------------------------------
   // Display Updated Battlefield
@@ -134,10 +145,13 @@ int main(void) {
   display_battlefield(&bf);
 
   printf("\nAnd again...\n");
-  Unit *secone = global_unit_pool[18]; 
-  move_unit(&bf, secone, 4, 8);
+  Unit *secone = global_unit_pool[18];
+  move_unit(&bf, &unit_map, secone->uid, 4, 8);
 
   display_battlefield(&bf);
+
+  Unit *here = get_unit_by_uid(&unit_map, global_unit_pool[4]->uid);
+  printf("check this thing out %s\n", here->uid); // returns check this thing out Unit4:0:4
 
   // -------------------------------
   // Display the Initial Battlefield Grid
@@ -149,7 +163,7 @@ int main(void) {
   // Test execute_action
   // -------------------------------
   printf("\nAttempting to execute action: Fireball from %s on Unit10...\n", global_unit_pool[4]->uid);
-  int result = execute_action(&bf, global_unit_pool[4]->uid, global_unit_pool[10]->uid, fireball->skill_id);
+  int result = execute_action(&bf, &unit_map, global_unit_pool[4]->uid, global_unit_pool[10]->uid, fireball->skill_id);
   if (result != 0) {
     printf("execute_action failed with error code %d\n", result);
   }
@@ -157,7 +171,7 @@ int main(void) {
   end_turn(&bf, 0, 1);
 
   printf("\nAttempting to execute action: Fireball from %s on Unit4...\n", global_unit_pool[18]->uid);
-  int reresult = execute_action(&bf, global_unit_pool[18]->uid, global_unit_pool[4]->uid, fireball->skill_id);
+  int reresult = execute_action(&bf, &unit_map, global_unit_pool[18]->uid, global_unit_pool[4]->uid, fireball->skill_id);
   if (reresult != 0) {
     printf("execute_action failed with error code %d\n", reresult);
   }

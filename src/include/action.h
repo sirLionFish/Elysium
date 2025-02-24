@@ -4,6 +4,7 @@
 #include "unit.h"
 #include "skill.h"
 #include "battlefield.h"
+#include "unit_map.h"
 
 //   typedef enum {
 //     RANGE,
@@ -32,7 +33,7 @@
 //     int aoe;
 //   } Action;
 
-  int execute_action(Battlefield *bf, const char *actor_uid, const char *target_uid, int skill_id);
+  int execute_action(Battlefield *bf, UnitMap *unit_map, const char *actor_uid, const char *target_uid, int skill_id);
   // void apply_action_to_unit(Unit *target, Skill *skill);
   // void execute_action(Battlefield *battlefield, Unit *actor, int skill_id, int target_row, int target_col);
 

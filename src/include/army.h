@@ -3,6 +3,7 @@
 
 #include "global_limit.h"
 #include "unit_struct.h"
+#include "unit_map.h"
 
   typedef struct {
     Unit *units[COL_MAX];
@@ -16,6 +17,6 @@
   } Army;
 
   void initialize_army(Army *army, int army_id);
-  int add_unit_to_army(Army *army, int unit_id, int formation);
+  int add_unit_to_army(Army *army, int unit_id, int formation, UnitMap *unit_map);
 
 #endif

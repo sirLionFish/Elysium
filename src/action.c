@@ -5,6 +5,7 @@
 #include "include/battlefield.h"
 #include "include/global_limit.h"
 #include "include/validate.h"
+#include "include/unit_map.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <stddef.h>
@@ -29,10 +30,10 @@ void apply_action_to_unit(Unit *target, Skill *skill) {
   }
 }
 
-int execute_action(Battlefield *bf, const char *actor_uid, const char *target_uid, int skill_id) {
+int execute_action(Battlefield *bf, UnitMap *unit_map, const char *actor_uid, const char *target_uid, int skill_id) {
   // Validate checks
-  Unit *actor = find_unit_by_uid(bf, actor_uid);
-  Unit *target = find_unit_by_uid(bf, target_uid);
+  Unit *actor = get_unit_by_uid(unit_map, actor_uid);
+  Unit *target = get_unit_by_uid(unit_map, target_uid);
   Skill *skill = get_skill_by_id(skill_id);
 
   if (validate_unit(actor, "execute_action (actor)") != 0 ||
@@ -45,8 +46,7 @@ int execute_action(Battlefield *bf, const char *actor_uid, const char *target_ui
   // Check if the target is in range using Chebyshev distance.
   int distance = chebyshev_distance(actor->position_row, actor->position_col, target->position_row, target->position_col);
   if (distance > skill->stat_change.range) {
-    printf("ERROR: Target is out of range for skill %s (range: %d, distance: %d).\n", 
-      skill->name, skill->stat_change.range, distance);
+    printf("ERROR: Target is out of range for skill %s.\n", skill->name);
     return -2;
   }
   

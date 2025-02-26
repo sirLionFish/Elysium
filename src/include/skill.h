@@ -20,7 +20,7 @@
   } Skill;
 
   Skill *get_skill_by_id(int skill_id);
-  Skill *create_skill(const char *name, int health, int attack, int defence, int range, int travel_speed, TargetType type);
+  Skill *create_skill(const char *name, int health, int range, int travel_speed, TargetType type);
   Skill global_skill_pool[MAX_SKILLS];
   int global_skill_count;
 

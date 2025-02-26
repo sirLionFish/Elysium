@@ -10,7 +10,7 @@
 
 int global_unit_pool_count = 0;
 
-Unit *create_and_add_unit(const char *name, int health, int attack, int defence, int range, int travel_speed) {
+Unit *create_and_add_unit(const char *name, int health, int range, int travel_speed) {
   if (global_unit_pool_count >= MAX_UNIT_POOL) {
     printf("Global unit pool is full!\n");
     return NULL;
@@ -29,8 +29,6 @@ Unit *create_and_add_unit(const char *name, int health, int attack, int defence,
   unit->position_col = -1;
   unit->stats.health = health;
   unit->stats.max_health = health;
-  unit->stats.attack = attack;
-  unit->stats.defence = defence;
   unit->stats.range = range;
   unit->stats.travel_speed = travel_speed;
 

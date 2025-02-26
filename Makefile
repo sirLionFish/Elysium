@@ -5,7 +5,7 @@ LDFLAGS = -ldb
 SRC_DIR = src
 OBJ_DIR = build
 
-SOURCES = $(wildcard $(SRC_DIR)/*.c) $(SRC_DIR)/main.c
+SOURCES = $(wildcard $(SRC_DIR)/*.c) $(wildcard $(SRC_DIR)/fixture/*.c) $(SRC_DIR)/main.c
 OBJECTS = $(patsubst $(SRC_DIR)/%.c,$(OBJ_DIR)/%.o,$(SOURCES))
 
 TARGET = start

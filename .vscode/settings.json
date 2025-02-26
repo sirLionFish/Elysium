@@ -1,6 +1,9 @@
 {
   "files.associations": {
     "army.h": "c",
-    "global_limit.h": "c"
+    "global_limit.h": "c",
+    "unit.h": "c",
+    "skill.h": "c",
+    "battlefield.h": "c"
   }
 }

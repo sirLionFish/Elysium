@@ -9,7 +9,6 @@
 
 int global_faction_pool_count = 0; 
 
-
 void initialize_faction(const char *name, int army_id) {
   if (global_faction_pool_count >= MAX_FACTIONS) {
     printf("Global faction pool is full!\n");
@@ -25,7 +24,6 @@ void initialize_faction(const char *name, int army_id) {
   strncpy(new_faction->name, name, sizeof(new_faction->name) - 1);
   new_faction->name[sizeof(new_faction->name) - 1] = '\0';
   initialize_army(&new_faction->army, army_id);
-
 
   global_faction_pool[global_faction_pool_count++] = new_faction;
 }

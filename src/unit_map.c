@@ -14,7 +14,7 @@ unsigned int hash(const char *str) {
   return hash_val % HASH_MAP_SIZE;
 }
 
-void insert_unit(UnitMap *unit_map, Unit *unit) {
+void insert_unit_to_unit_map(UnitMap *unit_map, Unit *unit) {
   unsigned int index = hash(unit->uid);
 
   UnitMapEntry *new_entry = (UnitMapEntry *)malloc(sizeof(UnitMapEntry));

@@ -58,7 +58,7 @@ int validate_position(Battlefield *bf, int row, int col) {
 
 int validate_turn(Battlefield *bf, Unit *actor) {
   if (actor->allegience != bf->global_turn) {
-    printf("Error: Not the %s turn (allegiencee %d, turn %d).\n",
+    printf("Error: Not the %s turn (allegience %d, turn %d).\n",
       actor->uid, actor->allegience, bf->global_turn);
     return -1;
   }

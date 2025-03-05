@@ -4,6 +4,8 @@
 #include "include/battlefield.h"
 #include "include/validate.h"
 #include "include/unit_map.h"
+#include "include/action.h"
+#include "include/action_queue.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <stddef.h>
@@ -13,6 +15,10 @@ int chebyshev_distance(int r1, int c1, int r2, int c2) {
   int dx = abs(r1 - r2);
   int dy = abs(c1 - c2);
   return (dx > dy) ? dx : dy;
+}
+
+int manhattan_distance(int x1, int y1, int x2, int y2) {
+  return abs(x1 - x2) + abs(y1 - y2);
 }
 
 int move_unit(Battlefield *bf, UnitMap *unit_map, const char *unit_uid, int dest_row, int dest_col) {

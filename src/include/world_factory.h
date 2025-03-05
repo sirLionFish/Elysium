@@ -12,8 +12,8 @@
   void assign_skills_for_human_units();
   void assign_skills_for_creature_units();
 
-  void assemble_human_army(Army *army, UnitMap *unit_map);
-  void assemble_creature_army(Army *army, UnitMap *unit_map);
+  void assemble_human_army(Army *army);
+  void assemble_creature_army(Army *army);
 
   void assemble_human_faction(Army army);
   void assemble_creature_faction(Army army);

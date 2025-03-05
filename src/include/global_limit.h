@@ -20,5 +20,4 @@
 #define ERR_CELL_OCCUPIED 3
 #define ERR_OUT_OF_RANGE 4
 
-
 #endif

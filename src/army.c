@@ -25,7 +25,7 @@ void assign_unit_uid(Unit *unit, int army_id, int position) {
   sprintf(unit->uid, "%s:%X:%X", unit->name, army_id, position);
 }
 
-int add_unit_to_army(Army *army, int unit_id, int formation, UnitMap *unit_map) {
+int add_unit_to_army(Army *army, int unit_id, int formation) {
   if (formation < 0 || formation >= ROW_MAX) {
     printf("Invalid row formation id %d\n", unit_id);
     return -1;
@@ -50,8 +50,6 @@ int add_unit_to_army(Army *army, int unit_id, int formation, UnitMap *unit_map) 
   //update uid of unit based on position
   assign_unit_uid(unit, army->army_id, row->unit_count);
   unit->allegience = army->army_id;
-
-  insert_unit(unit_map, unit);
 
   row->unit_count++;
 

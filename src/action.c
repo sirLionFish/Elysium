@@ -16,8 +16,6 @@ void apply_action_to_unit(Unit *target, Skill *skill) {
 
   // Apply skill stat changes to the target's stats.
   target->stats.health += skill->stat_change.health;
-  target->stats.attack += skill->stat_change.attack;
-  target->stats.defence += skill->stat_change.defence;
   target->stats.range += skill->stat_change.range;
   target->stats.travel_speed += skill->stat_change.travel_speed;
 
@@ -56,9 +54,8 @@ int execute_action(Battlefield *bf, UnitMap *unit_map, const char *actor_uid, co
   // Log action execution.
   printf("%s used '%s' on %s at (%d, %d).\n", 
     actor->uid, skill->name, target->uid, target->position_row, target->position_col);
-  printf("Updated target stats: Health=%d, Attack=%d, Defence=%d, Range=%d, Travel Speed=%d\n",
-    target->stats.health, target->stats.attack, target->stats.defence,
-    target->stats.range, target->stats.travel_speed);
+  printf("Updated target stats: Health=%d, Range=%d, Travel Speed=%d\n",
+    target->stats.health, target->stats.range, target->stats.travel_speed);
   
   return 0;
 }

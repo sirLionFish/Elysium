@@ -22,10 +22,7 @@
 //   }
 // }
 
-// Action move_helper_function() {
-//   Action moveAction = create_move_action(global_unit_pool[4]->uid, 6, 3);
-//   return moveAction;
-// }
+
 
 // //revaluate how skill is being called
 // Action action_helper_function() {
@@ -33,7 +30,12 @@
 //   return execAction;
 // }
 
-// void adv_move_unit(Battlefield *bf, UnitMap unit_map, Action moveAction) {
+// Action move_helper_function() {
+//   Action moveAction = create_move_action(global_unit_pool[4]->uid, 6, 3);
+//   return moveAction;
+// }
+
+// void auto_move_unit(Battlefield *bf, UnitMap unit_map, Action moveAction) {
 //   int moveResult = perform_action(&bf, &unit_map, moveAction);
 
 //   if (moveResult != 0) {

@@ -1,8 +1,8 @@
 #include "include/battlefield.h"
 #include "include/faction.h"
-#include "include/unit.h"
 #include "include/unit_struct.h"
 #include "include/global_limit.h"
+#include "include/unit_map.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <stddef.h>
@@ -17,15 +17,15 @@ void initialize_battlefield(Battlefield *bf) {
   }
 }
 
-int add_faction_to_battlefield(Battlefield *bf, int faction_id, int faction_index) {
+void add_faction_to_battlefield(Battlefield *bf, int faction_id, int faction_index, UnitMap *unit_map) {
   if (faction_index < 0 || faction_index > 1) {
     printf("Invalid faction index %d.\n", faction_index);
-    return -1;
+    return;
   }
 
   if (faction_id < 0 || faction_id >= global_faction_pool_count || !global_faction_pool[faction_id]) {
     printf("Error: invalid faction_id %d.\n", faction_id);
-    return -1;
+    return;
   }
 
   Faction *faction = global_faction_pool[faction_id];
@@ -37,25 +37,19 @@ int add_faction_to_battlefield(Battlefield *bf, int faction_id, int faction_inde
   for (int j = 0; j < faction->army.rows[0].unit_count; j++) {
     Unit *unit = faction->army.rows[0].units[j];
 
-    if(!unit) {
+    if (!unit) {
       printf("Warning: NULL unit at index %d for faction %d\n", j, faction_id);
       continue;
     }
 
     int col = col_offset + j;
-
-    //place unit in battlefield
     bf->grid[row][col] = unit;
-
-    //update unit position fields
     unit->position_row = row;
     unit->position_col = col;
+    insert_unit_to_unit_map(unit_map, unit);
 
-    printf("Placed %s (ID: %d) at (%d, %d)\n",
-      unit->name, unit->unit_id, row, col);
+    printf("Placed %s (ID: %d) at (%d, %d)\n", unit->name, unit->unit_id, row, col);
   }
-
-  return 0;
 }
 
 void display_battlefield(const Battlefield* battlefield) {

@@ -17,6 +17,6 @@
   } Army;
 
   void initialize_army(Army *army, int army_id);
-  int add_unit_to_army(Army *army, int unit_id, int formation, UnitMap *unit_map);
+  int add_unit_to_army(Army *army, int unit_id, int formation);
 
 #endif

@@ -31,10 +31,8 @@ int main(void) {
   // Initialize Two Armies and Add Units from Global Unit Pool
   // -------------------------------
   Army armyA, armyB;
-  assemble_human_army(&armyA, &unit_map);
-  assemble_creature_army(&armyB, &unit_map);
-
-  print_unit_map(&unit_map);
+  assemble_human_army(&armyA);
+  assemble_creature_army(&armyB);
 
   // -------------------------------
   // Initialize Factions and Assign Armies
@@ -48,8 +46,11 @@ int main(void) {
   Battlefield bf;
   initialize_battlefield(&bf);
 
-  add_faction_to_battlefield(&bf, 0, 0); // Faction A
-  add_faction_to_battlefield(&bf, 1, 1); // Faction B
+  add_faction_to_battlefield(&bf, 0, 0, &unit_map); // Faction A
+  add_faction_to_battlefield(&bf, 1, 1, &unit_map); // Faction B
+
+  print_unit_map(&unit_map);
+
 
   // Start the game
 

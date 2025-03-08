@@ -14,6 +14,8 @@
 #define MAX_INPUT 100
 #define MAX_PATH 1000
 
+#define INF INT_MAX
+
 #define SUCCESS 0
 #define ERR_INVALID_POSITION 1
 #define ERR_NO_UNIT 2

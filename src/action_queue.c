@@ -12,7 +12,7 @@ Action create_move_action(const char *actor_uid, int dest_row, int dest_col) {
   Action action;
   action.type = ACTION_MOVE;
 
-  //Copy actot's uid
+  //Copy actor's uid
   strncpy(action.params.move.actor_uid, actor_uid, sizeof(action.params.move.actor_uid) - 1);
   action.params.move.actor_uid[sizeof(action.params.move.actor_uid) - 1] = '\0';
 
@@ -86,7 +86,6 @@ void add_action_to_queue(ActionQueue *queue, Action action) {
     }
   }
 
-  //add action to queue
   queue->actions[queue->size++] = action;
 }
 

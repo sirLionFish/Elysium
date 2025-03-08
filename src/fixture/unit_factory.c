@@ -10,29 +10,29 @@
 // -------------------------------
 void assemble_human_units() {
                    // name, health, range, travel_speed
-  create_and_add_unit("Farmer", 100, 2, 2);
+  create_and_add_unit("Farmer", 100, 2, 1);
   create_and_add_unit("Guard", 100, 2, 2);
   create_and_add_unit("Peasant", 100, 2, 2);
-  create_and_add_unit("Merchant", 100, 2, 2);
+  create_and_add_unit("Merchant", 100, 2, 1);
   create_and_add_unit("Knight", 100, 2, 2);
-  create_and_add_unit("Monk", 100, 2, 2);
+  create_and_add_unit("Monk", 100, 2, 1);
   create_and_add_unit("Priest", 100, 2, 2);
-  create_and_add_unit("Mage", 100, 2, 2);
+  create_and_add_unit("Mage", 100, 2, 1);
   create_and_add_unit("Mercenary", 100, 2, 2);
-  create_and_add_unit("Thieve", 100, 2, 2);
+  create_and_add_unit("Thieve", 100, 2, 3);
 }
 
 void assemble_creature_units() {
-  create_and_add_unit("Globlin", 100, 2, 2);
+  create_and_add_unit("Globlin", 100, 2, 1);
   create_and_add_unit("Troll", 100, 2, 2);
-  create_and_add_unit("Gremlin", 100, 2, 2);
-  create_and_add_unit("Zombie", 100, 2, 2);
+  create_and_add_unit("Gremlin", 100, 2, 3);
+  create_and_add_unit("Zombie", 100, 2, 3);
   create_and_add_unit("Vampire", 100, 2, 2);
-  create_and_add_unit("Wolf", 100, 2, 2);
+  create_and_add_unit("Wolf", 100, 2, 1);
   create_and_add_unit("Bear", 100, 2, 2);
-  create_and_add_unit("Orc", 100, 2, 2);
-  create_and_add_unit("Demon", 100, 2, 2);
-  create_and_add_unit("Cultist", 100, 2, 2);
+  create_and_add_unit("Orc", 100, 2, 1);
+  create_and_add_unit("Demon", 100, 2, 1);
+  create_and_add_unit("Cultist", 100, 2, 1);
 }
 
 // -------------------------------

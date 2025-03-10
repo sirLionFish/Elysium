@@ -15,7 +15,7 @@
 #include "include/director.h"
 #include "include/puppet.h"
 
-void select_target(Battlefield *bf, ActionQueue *queue, Unit *actor) {
+void select_target(Battlefield *bf, ActionQueue *queue, Unit *actor, UnitMap *unit_map) {
   int target_x, target_y;
 
   printf("Select target (x, y) coordinate: ");
@@ -31,13 +31,13 @@ void select_target(Battlefield *bf, ActionQueue *queue, Unit *actor) {
   if (target_unit == NULL) {
     printf("Move action.\n");
     Action action = create_move_action(actor->uid, target_x, target_y);
-    add_action_to_queue(queue, action);
+    add_action_to_queue(queue, action, unit_map);
   } else {
     printf("Perform action\n");
     int skill_id;
     scanf("%d", &skill_id);
     Action action = create_execute_action(actor->uid, target_unit->uid, skill_id);
-    add_action_to_queue(queue, action);
+    add_action_to_queue(queue, action, unit_map);
   }
 }
 
@@ -53,185 +53,8 @@ void select_actor(Battlefield *bf, ActionQueue *queue, UnitMap *unit_map) {
   }
 
   printf("Actor selected: UID %s\n", actor->uid);
-  select_target(bf, queue, actor);
+  select_target(bf, queue, actor, unit_map);
 }
-
-// const char* director_calculate(Unit *actor, UnitMap *unit_map) { // Expect a Unit pointer
-//   if (!actor) {
-//     printf("Invalid unit UID\n");
-//     return NULL;
-//   }
-
-//   printf("Calculating for UID: %s\n", actor->uid);
-
-//   Skill *actor_skill = get_skill_by_id(actor->skill_list[0]);
-//   TargetType target_type = actor_skill->target;
-
-//   Unit *nearest_target = NULL;
-//   int min_distance = INF;
-
-//   // Stage 1: Search for target within skill range (Primary Priority)
-//   for (int i = 0; i < HASH_MAP_SIZE; i++) {
-//     UnitMapEntry *entry = unit_map->table[i];
-//     while (entry) {
-//       Unit *target = entry->unit;
-//       if (target) {
-//         int is_valid_target = 0;
-//         if ((target_type == MATCH && target->allegience == actor->allegience) ||
-//             (target_type == NOT_MATCH && target->allegience != actor->allegience)) {
-//           is_valid_target = 1;
-//         }
-
-//         if (is_valid_target) {
-//           int distance = chebyshev_distance(actor->position_row, actor->position_col,
-//                                             target->position_row, target->position_col);
-
-//           if (distance > 0 && distance <= actor_skill->stat_change.range) {
-//             if (distance < min_distance) {
-//               min_distance = distance;
-//               nearest_target = target;
-//             }
-//           }
-//         }
-//       }
-//       entry = entry->next;
-//     }
-//   }
-
-//   // Stage 2: Fallback to Manhattan Distance (Secondary Priority)
-//   if (!nearest_target) {
-//     min_distance = INF;  // Reset min_distance
-//     for (int i = 0; i < HASH_MAP_SIZE; i++) {
-//       UnitMapEntry *entry = unit_map->table[i];
-//       while (entry) {
-//         Unit *target = entry->unit;
-//         if (target) {
-//           int is_valid_target = 0;
-//           if ((target_type == MATCH && target->allegience == actor->allegience) ||
-//               (target_type == NOT_MATCH && target->allegience != actor->allegience)) {
-//             is_valid_target = 1;
-//           }
-
-//           if (is_valid_target) {
-//             int distance = manhattan_distance(actor->position_row, actor->position_col,
-//                                               target->position_row, target->position_col);
-//             if (distance < min_distance) {
-//               min_distance = distance;
-//               nearest_target = target;
-//             }
-//           }
-//         }
-//         entry = entry->next;
-//       }
-//     }
-//   }
-
-//   // Stage 3: Fallback to Chebyshev Distance (Tertiary Priority)
-//   if (!nearest_target) {
-//     min_distance = INF;  // Reset min_distance
-//     for (int i = 0; i < HASH_MAP_SIZE; i++) {
-//       UnitMapEntry *entry = unit_map->table[i];
-//       while (entry) {
-//         Unit *target = entry->unit;
-//         if (target) {
-//           int is_valid_target = 0;
-//           if ((target_type == MATCH && target->allegience == actor->allegience) ||
-//               (target_type == NOT_MATCH && target->allegience != actor->allegience)) {
-//             is_valid_target = 1;
-//           }
-
-//           if (is_valid_target) {
-//             int distance = chebyshev_distance(actor->position_row, actor->position_col,
-//                                               target->position_row, target->position_col);
-//             if (distance < min_distance) {
-//               min_distance = distance;
-//               nearest_target = target;
-//             }
-//           }
-//         }
-//         entry = entry->next;
-//       }
-//     }
-//   }
-
-//   if (nearest_target) {
-//     printf("Nearest Target UID: %s at (%d, %d) Distance: %d\n", nearest_target->uid, nearest_target->position_row, nearest_target->position_col, min_distance);
-//     return nearest_target->uid;
-//   } else {
-//     printf("No valid target found\n");
-//     return NULL;
-//   }
-// }
-
-// void puppet_movement(Battlefield *bf, UnitMap *unit_map, ActionQueue *action_queue) {
-//   printf("Start Puppet Movement for Faction: %d\n", bf->global_turn);
-
-//   for (int i = 0; i < HASH_MAP_SIZE; i++) {
-//     UnitMapEntry *entry = unit_map->table[i];
-//     while (entry) {
-//       Unit *actor = entry->unit;
-//       if (actor == NULL) {
-//         entry = entry->next;
-//         continue;
-//       }
-//       if (actor->allegience != bf->global_turn) {
-//         entry = entry->next;
-//         continue;
-//       }
-
-//       printf("Calculating movement for UID: %s\n", actor->uid);
-//       const char *target_uid = director_calculate(actor, unit_map);
-
-//       if (target_uid) {
-//         Unit *target = get_unit_by_uid(unit_map, target_uid);
-//         if (target) {
-//           int actor_x = actor->position_row;
-//           int actor_y = actor->position_col;
-//           int target_x = target->position_row;
-//           int target_y = target->position_col;
-//           int travel_speed = actor->stats.travel_speed;
-
-//           printf("Unit UID: %s | Target UID: %s |Actor (%d, %d) -> Target (%d, %d)",
-//             actor->uid, target->uid, actor_x, actor_y, target_x, target_y);
-
-//           while (travel_speed > 0) {
-//             int dx = abs(target_x - actor_x);
-//             int dy = abs(target_y - actor_y);
-
-//             if (dx == 0) {
-//               int step = (dy >= travel_speed) ? travel_speed : dy;
-//               actor_y += (target_y > actor_y) ? step : -step;
-//               travel_speed -= step;
-//             } else if (dy == 0) {
-//               int step = (dx >= travel_speed) ? travel_speed : dx;
-//               actor_x += (target_x > actor_x) ? step : -step;
-//               travel_speed -= step;
-//             } else {
-//               int step_x = (dx >= travel_speed) ? travel_speed : dx;
-//               int step_y = (dy >= travel_speed) ? travel_speed : dy;
-//               actor_x += (target_x > actor_x) ? step_x : -step_x;
-//               actor_y += (target_y > actor_y) ? step_y : -step_y;
-//               travel_speed -= (step_x + step_y);
-//             }
-
-//             printf("Current Position: (%d, %d), Remaining travel speed: %d\n", actor_x, actor_y, travel_speed);
-//             if (dx <= 1 && dy <= 1) break;
-//           }
-//           printf("Final Position: (%d, %d)\n", actor_x, actor_y);
-//           Action moveAction = create_move_action(actor->uid, actor_x, actor_y);
-//           add_action_to_queue(action_queue, moveAction);
-
-//         } else {
-//           printf("Target UID %s not found in hash map\n", target_uid);
-//         }
-//       } else {
-//         printf("No target found for UID: %s\n", actor->uid);
-//       }
-
-//       entry = entry->next;
-//     }
-//   }
-// }
 
 void start_game(Battlefield *bf, int army1_id, int army2_id, UnitMap *unit_map, ActionQueue *action_queue) {
   bf->global_turn = (rand() % 2 == 0) ? army1_id  : army2_id;

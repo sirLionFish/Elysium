@@ -6,7 +6,7 @@
 
  typedef struct {
     int unit_id;
-    char uid[50];
+    char uid[MAX_UID_LENGTH];
     char name[50];
     int position_row;
     int position_col;

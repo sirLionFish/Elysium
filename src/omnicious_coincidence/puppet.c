@@ -30,7 +30,7 @@ void puppet_movement(Battlefield *bf, UnitMap *unit_map, ActionQueue *action_que
             case TARGET_IN_SKILL_RANGE: {
               printf("Target within range. Executing  action for UID: %s\n", actor->uid);
               Action saved_action = create_execute_action(actor->uid, target->uid, actor->skill_list[1]);
-              add_action_to_queue(action_queue, saved_action);
+              add_action_to_queue(action_queue, saved_action, unit_map);
               break;
             }
 
@@ -76,7 +76,7 @@ void puppet_movement(Battlefield *bf, UnitMap *unit_map, ActionQueue *action_que
               }
               printf("Final Position: (%d, %d)\n", actor_x, actor_y);
               Action move_action = create_move_action(actor->uid, actor_x, actor_y);
-              add_action_to_queue(action_queue, move_action);
+              add_action_to_queue(action_queue, move_action, unit_map);
               break;
             }
             default: {

@@ -18,6 +18,5 @@
   void assemble_human_faction(Army army);
   void assemble_creature_faction(Army army);
 
-  void add_move_to_queue(ActionQueue *actionQueue, Action moveAction);
-
+  void add_move_to_queue(ActionQueue *actionQueue, Action moveAction, UnitMap *unit_map);
 #endif

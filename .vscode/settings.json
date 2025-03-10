@@ -4,6 +4,7 @@
     "global_limit.h": "c",
     "unit.h": "c",
     "skill.h": "c",
-    "battlefield.h": "c"
+    "battlefield.h": "c",
+    "action_queue.h": "c"
   }
 }

@@ -95,7 +95,6 @@ void add_action_to_queue(ActionQueue *queue, Action action, UnitMap *unit_map) {
     int action_col = action.params.move.dest_col;
     Unit *current_unit = get_unit_by_uid(unit_map, action.params.move.actor_uid);
 
-    int min_distance;
     int closest_index = -1;
 
     //check for another move actiuon already targets this spot
@@ -111,8 +110,8 @@ void add_action_to_queue(ActionQueue *queue, Action action, UnitMap *unit_map) {
           int new_distance = abs(current_unit->position_row - action_row) + abs(current_unit->position_col - action_col);
 
           if (new_distance < existing_distance) {
-            // New unit is closer; mark the existing unit for removal
-            min_distance = new_distance;
+            // New unit is closer; mark the existing unit for removal by int min_distance = new_distance;
+            
             closest_index = i;
           } else {
             // New unit is farther; reject the action
